@@ -24,12 +24,14 @@ const VideoChat: React.FC<VideoChatProps> = ({ isCaller, offer }) => {
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = remoteStream.current;
       }
+      console.log('Received remote track:', event.track);
     };
 
     // Handle ICE candidates
     pc.onicecandidate = (event) => {
       if (event.candidate) {
         // Implement signaling logic to send candidate to the other peer
+        console.log('Sending ICE candidate:', event.candidate);
       }
     };
 
@@ -58,6 +60,7 @@ const VideoChat: React.FC<VideoChatProps> = ({ isCaller, offer }) => {
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
         // Send the offer to the other peer (implement signaling logic here)
+        console.log('Sending offer:', offer);
       }
     } catch (err) {
       console.error('Error accessing media devices.', err);
@@ -70,6 +73,7 @@ const VideoChat: React.FC<VideoChatProps> = ({ isCaller, offer }) => {
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
       // Send the answer back to the caller (implement signaling logic here)
+      console.log('Sending answer:', answer);
     }
   };
 
