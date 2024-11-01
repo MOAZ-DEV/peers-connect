@@ -1,26 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export const useVideoStream = () => {
-    const [localStream, setLocalStream] = useState<null | MediaStream>(null);
-
-    const
-        servers = {
-            iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'], },],
-            iceCandidatePoolSize: 10,
-        },
-        pc = new RTCPeerConnection(servers);
+    const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
     useEffect(() => {
         const getMediaStream = async () => {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                const constraints = { video: true, audio: true };
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 setLocalStream(stream);
-
-                stream.getTracks().forEach((track: MediaStreamTrack) => {
-                    pc.addTrack(track, stream);
-                });
             } catch (error) {
-                console.error("Error accessing media devices.", error);
+                console.error('Error accessing media devices.', error);
             }
         };
 
@@ -32,6 +22,6 @@ export const useVideoStream = () => {
     }, []);
 
     return {
-        WebcamVideoSrc: localStream
+        WebcamVideoSrc: localStream,
     };
 };
