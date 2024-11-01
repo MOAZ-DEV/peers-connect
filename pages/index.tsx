@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useVideoStream } from "@/hook/use-video-stream";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
