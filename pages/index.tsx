@@ -94,9 +94,9 @@ const Home = () => {
       </div>
       <div className="flex flex-col gap-2">
         <Button onClick={createOffer}>Create Offer</Button>
-        <Input value={offer} onChange={(e) => setOffer(e.target.value)} placeholder="Paste Offer Here..." />
+        <input className="flex h-10 w-full rounded-md bg-background px-3 py-2 text-sm border-[1px] border-[#8181812a] ring-offset-background outline-0 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" value={offer} onChange={(e) => setOffer(e.target.value)} placeholder="Paste Offer Here..." />
         <Button onClick={handleOffer}>Send Offer</Button>
-        <Input value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Paste Answer Here..." />
+        <input className="flex h-10 w-full rounded-md bg-background px-3 py-2 text-sm border-[1px] border-[#8181812a] ring-offset-background outline-0 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Paste Answer Here..." />
         <Button onClick={handleAnswer}>Send Answer</Button>
       </div>
       <Toaster />
