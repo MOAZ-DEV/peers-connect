@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { Input } from "@/components/ui/input";
 
 const Home = () => {
   const
@@ -70,10 +71,10 @@ const Home = () => {
           className="h-[500px] w-[650px] max-w-full border border-[#ffffff12] rounded-lg object-cover" />
       </div>
       <div className="flex flex-row gap-2">
-        <input
+        <Input
           className="flex h-10 w-full rounded-md bg-background px-3 py-2 text-sm border-[1px] border-[#8181812a] ring-offset-background outline-0"
           value={''}
-          onChange={(e) => { }}
+          onChange={() => { }}
           placeholder="Paste Code Here..."
         />
         <Button variant={"secondary"} className="font-semibold">Join</Button>
