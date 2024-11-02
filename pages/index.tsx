@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { useVideoStream } from "@/hook/use-video-stream";
+import { useVideoStream } from "@/hooks/use-video-stream";
 import { Button } from "@/components/ui/button";
 import { Link } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { Input } from "@/components/ui/input";
+import VideoCallComponent from "@/components/VideoCallComponent";
 
 const Home = () => {
   const
@@ -57,7 +58,8 @@ const Home = () => {
 
   return (
     <div className="min-h-screen flex flex-col gap-6 items-center justify-center">
-      <div className="flex flex-row gap-6">
+      <VideoCallComponent />
+      {/* <div className="flex flex-row gap-6">
         <Button variant="outline" onClick={() => toast({ description: "Copied your invite code!" })}>
           <Link />
         </Button>
@@ -79,7 +81,7 @@ const Home = () => {
         />
         <Button variant={"secondary"} className="font-semibold">Join</Button>
       </div>
-      <Toaster />
+      <Toaster /> */}
     </div>
   );
 };
