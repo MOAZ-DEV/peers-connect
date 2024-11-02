@@ -6,66 +6,53 @@ import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 
 const Home = () => {
-  const { toast } = useToast();
-  const { WebcamVideoSrc } = useVideoStream();
-  const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
-  const [offer, setOffer] = useState<string>("");
-  const [answer, setAnswer] = useState<string>("");
+  const
+    { toast } = useToast(),
+    { WebcamVideoSrc } = useVideoStream();
 
-  // Set local video stream
+  const
+    [RemoteStream, setRemoteStream] = useState<MediaStream | null>();
+
+  const
+    videoRef = useRef<HTMLVideoElement | null>(null),
+    remoteVideoRef = useRef<HTMLVideoElement | null>(null);
+
   useEffect(() => {
     if (videoRef.current && WebcamVideoSrc) {
       videoRef.current.srcObject = WebcamVideoSrc;
     }
   }, [WebcamVideoSrc]);
 
-  // Setup peer connection
   useEffect(() => {
-    const pc = new RTCPeerConnection({
-      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] // Use your desired STUN servers
-    });
-    setPeerConnection(pc);
+    if (remoteVideoRef.current && RemoteStream) {
+      remoteVideoRef.current.srcObject = RemoteStream;
+    }
+  }, [RemoteStream]);
 
-    pc.onicecandidate = (event) => {
-      if (event.candidate) {
-        console.log("ICE Candidate: ", event.candidate);
-      }
-    };
+  useEffect(() => {
+    try {
+      const iceConfig = { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] }
+      const peerConnection = new RTCPeerConnection(iceConfig);
+      WebcamVideoSrc && WebcamVideoSrc.getTracks().forEach(track => {
+        peerConnection.addTrack(track, WebcamVideoSrc);
+      });
+    } catch (err) {
+      console.error(err)
+    }
+  }, [WebcamVideoSrc]);
 
-    pc.ontrack = (event) => {
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = event.streams[0];
-      }
-    };
-
-    return () => {
-      pc.close(); // Cleanup on unmount
-    };
+  useEffect(() => {
+    try {
+      const iceConfig = { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }] }
+      const remotePeerConnection = new RTCPeerConnection(iceConfig);
+      remotePeerConnection.addEventListener('track', async (event) => {
+        const [remoteStream] = event.streams;
+        setRemoteStream(remoteStream);
+      });
+    } catch (err) {
+      console.error(err)
+    }
   }, []);
-
-  const createOffer = async () => {
-    if (!peerConnection) return;
-    const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
-    setOffer(JSON.stringify(offer)); // Store offer for sharing
-  };
-
-  const handleOffer = async () => {
-    if (!peerConnection) return;
-    const parsedOffer = JSON.parse(offer);
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(parsedOffer));
-    const answer = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
-    setAnswer(JSON.stringify(answer)); // Store answer for sharing
-  };
-
-  const handleAnswer = async () => {
-    if (!peerConnection) return;
-    const parsedAnswer = JSON.parse(answer);
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(parsedAnswer));
-  };
 
   return (
     <div className="min-h-screen flex flex-col gap-6 items-center justify-center">
@@ -77,26 +64,19 @@ const Home = () => {
       </div>
       <div className="flex flex-row gap-4">
         <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          className="h-[500px] w-[655px] max-w-full bg-[#ffffff07] rounded-lg object-cover"
-        />
-        <video
-          ref={remoteVideoRef}
-          autoPlay
-          playsInline
-          muted
-          className="h-[500px] w-[650px] max-w-full border border-[#ffffff12] rounded-lg object-cover"
-        />
+          ref={videoRef} autoPlay playsInline muted
+          className="h-[500px] w-[655px] max-w-full bg-[#ffffff07] rounded-lg object-cover" />
+        <video ref={remoteVideoRef} autoPlay playsInline muted
+          className="h-[500px] w-[650px] max-w-full border border-[#ffffff12] rounded-lg object-cover" />
       </div>
-      <div className="flex flex-col gap-2">
-        <Button onClick={createOffer}>Create Offer</Button>
-        <input className="flex h-10 w-full rounded-md bg-background px-3 py-2 text-sm border-[1px] border-[#8181812a] ring-offset-background outline-0 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" value={offer} onChange={(e) => setOffer(e.target.value)} placeholder="Paste Offer Here..." />
-        <Button onClick={handleOffer}>Send Offer</Button>
-        <input className="flex h-10 w-full rounded-md bg-background px-3 py-2 text-sm border-[1px] border-[#8181812a] ring-offset-background outline-0 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Paste Answer Here..." />
-        <Button onClick={handleAnswer}>Send Answer</Button>
+      <div className="flex flex-row gap-2">
+        <input
+          className="flex h-10 w-full rounded-md bg-background px-3 py-2 text-sm border-[1px] border-[#8181812a] ring-offset-background outline-0"
+          value={''}
+          onChange={(e) => { }}
+          placeholder="Paste Code Here..."
+        />
+        <Button variant={"secondary"} className="font-semibold">Join</Button>
       </div>
       <Toaster />
     </div>
