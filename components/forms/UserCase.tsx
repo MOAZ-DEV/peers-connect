@@ -71,6 +71,7 @@ export const UserRegist = () => {
 
     const
         UserCases = () => (
+            <div className="flex flex-row gap-4 max-w-full overflow-x-auto p-4">
             <div className="flex flex-row gap-4">
                 {Cases.map(({ title, imgSrc }, idx) => (
                     <div
@@ -84,6 +85,7 @@ export const UserRegist = () => {
                     </div>
                 ))}
             </div>
+            </div>
         ),
         CreateCallCode = () => (
             <div className="flex flex-row gap-0">
@@ -95,7 +97,7 @@ export const UserRegist = () => {
         )
 
     return (
-        <div className="flex flex-col gap-12 items-center justify-center">
+        <div className="flex flex-col gap-12 items-center justify-center max-w-full">
             <Image src={PeersLogoSvg} alt="Peers" />
             <div className="flex flex-col items-center gap-4">
                 <h2 className="text-4xl font-normal text-center">
