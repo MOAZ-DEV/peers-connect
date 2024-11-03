@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Clipboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -11,15 +11,25 @@ import { useCreateCall } from "@/hooks/use-create-call";
 import { usePeerConnection } from "@/states/pc-connection";
 import { Input } from "../ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useLocalStream } from "@/hooks/use-local-stream";
 
 export const UserRegist = () => {
     const PcRef = usePeerConnection();
+    const { createCall, callId } = useCreateCall(PcRef);
+    const { localStream, startWebcam } = useLocalStream(PcRef);
     const [userData, setUserData] = useUserState();
     const { hasCallCode, CallCode } = userData;
     const [userCase, setUserCase] = useState<number | null>(null);
     const [currentStep, setCurrentStep] = useState<number>(0);
-    const { createCall, callId } = useCreateCall(PcRef);
     const { toast } = useToast();
+    const localVideoRef = useRef(null);
+
+    useEffect(() => {
+        if (localVideoRef.current && localStream) {
+            localVideoRef.current.srcObject = localStream;
+        }
+    }, [localStream]);
+
 
     const
         HandleCaseSelect = () => {
@@ -38,7 +48,8 @@ export const UserRegist = () => {
                 description: 'Your call code is copied and ready to be shared.'
             });
 
-        }
+        };
+        
 
     const Steps = [
         {
@@ -72,27 +83,36 @@ export const UserRegist = () => {
     const
         UserCases = () => (
             <div className="flex flex-row gap-4 max-w-full overflow-x-auto p-4">
-            <div className="flex flex-row gap-4">
-                {Cases.map(({ title, imgSrc }, idx) => (
-                    <div
-                        key={idx}
-                        onClick={() => setUserCase(idx)}
-                        className={`flex flex-col items-center justify-center w-72 min-w-min border border-[#ffffff25] rounded-xl hover:scale-[1.025] transition-all duration-300 cursor-pointer ${userCase === idx ? "!border-white" : ""}`}>
-                        <Image src={imgSrc} alt={title} className={`aspect-square w-full ${userCase !== idx && "grayscale"}`} />
-                        <p className={`text-center w-full px-12 py-6 transition-opacity duration-300 ${userCase !== idx ? "opacity-45" : ""}`}>
-                            {title}
-                        </p>
-                    </div>
-                ))}
-            </div>
+                <div className="flex flex-row gap-4">
+                    {Cases.map(({ title, imgSrc }, idx) => (
+                        <div
+                            key={idx}
+                            onClick={() => setUserCase(idx)}
+                            className={`flex flex-col items-center justify-center w-72 min-w-min border border-[#ffffff25] rounded-xl hover:scale-[1.025] transition-all duration-300 cursor-pointer ${userCase === idx ? "!border-white" : ""}`}>
+                            <Image src={imgSrc} alt={title} className={`aspect-square w-full ${userCase !== idx && "grayscale"}`} />
+                            <p className={`text-center w-full px-12 py-6 transition-opacity duration-300 ${userCase !== idx ? "opacity-45" : ""}`}>
+                                {title}
+                            </p>
+                        </div>
+                    ))}
+                </div>
             </div>
         ),
         CreateCallCode = () => (
-            <div className="flex flex-row gap-0">
-                <Input readOnly type="text" value={callId} />
-                <Button variant="default" className="-left-[1px]" onClick={HandleCopyCallId}>
-                    <Clipboard />
-                </Button>
+            <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-center h-[300px] border-[#frm,]">
+                    {
+                        localStream ?
+                            <video ref={localVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
+                            : <Button onClick={startWebcam}>Start Streaming</Button>
+                    }
+                </div>
+                <div className="flex flex-row gap-2">
+                    <Input readOnly type="text" value={callId} />
+                    <Button variant="default" className="-left-[1px]" onClick={HandleCopyCallId}>
+                        <Clipboard />
+                    </Button>
+                </div>
             </div>
         )
 
@@ -100,7 +120,7 @@ export const UserRegist = () => {
         <div className="flex flex-col gap-12 items-center justify-center max-w-full">
             <Image src={PeersLogoSvg} alt="Peers" />
             <div className="flex flex-col items-center gap-4">
-                <h2 className="text-4xl font-normal text-center">
+                <h2 className="text-4xl font-normal text-center max-sm:text-2xl">
                     {Steps[currentStep].title}
                 </h2>
                 <p className="text-sm font-light opacity-45">
