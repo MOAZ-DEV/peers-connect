@@ -7,10 +7,10 @@ import { Input } from "./ui/input";
 
 
 const VideoCallComponent = () => {
-  const { pcRef, remoteStream } = usePeerConnection();
-  const { localStream, startWebcam } = useLocalStream(pcRef);
-  const { createCall, callId } = useCreateCall(pcRef);
-  const { answerCall } = useAnswerCall(pcRef);
+  const { PcRef, remoteStream } = usePeerConnection();
+  const { localStream, startWebcam } = useLocalStream(PcRef);
+  const { createCall, callId } = useCreateCall(PcRef);
+  const { answerCall } = useAnswerCall(PcRef);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const inputRef = useRef(null);
