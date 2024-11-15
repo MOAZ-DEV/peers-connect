@@ -8,7 +8,7 @@ import ContactSvg from "@/public/pixeltrue-contact.svg";
 import VisionSvg from "@/public/pixeltrue-vision-1 1.svg";
 import { UserData, useUserState } from "@/states/user-state";
 import { useCreateCall } from "@/hooks/use-create-call";
-import { usePeerConnection } from "@/states/pc-connection";
+import { usePeerConnection } from "@/hooks/use-peer-connection";
 import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useLocalStream } from "@/hooks/use-local-stream";

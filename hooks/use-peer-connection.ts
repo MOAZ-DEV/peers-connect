@@ -11,23 +11,23 @@ const servers = {
 
 export const usePeerConnection = () => {
   const [remoteStream, setRemoteStream] = useState(null);
-  const pcRef = useRef(null);
+  const PcRef = useRef(null);
 
   useEffect(() => {
-    pcRef.current = new RTCPeerConnection(servers);
+    PcRef.current = new RTCPeerConnection(servers);
     const newRemoteStream = new MediaStream();
     setRemoteStream(newRemoteStream);
 
-    pcRef.current.ontrack = (event) => {
+    PcRef.current.ontrack = (event) => {
       event.streams[0].getTracks().forEach((track) => {
         newRemoteStream.addTrack(track);
       });
     };
 
     return () => {
-      pcRef.current?.close();
+      PcRef.current?.close();
     };
   }, []);
 
-  return { pcRef, remoteStream };
+  return { PcRef, remoteStream };
 };
