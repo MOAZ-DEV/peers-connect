@@ -15,7 +15,7 @@ import { useLocalStream } from "@/hooks/use-local-stream";
 import { useAnswerCall } from "@/hooks/use-answer-call";
 
 export const Connect = () => {
-    const PcRef = usePeerConnection();
+    const { PcRef, remoteStream } = usePeerConnection();
     const { createCall, callId } = useCreateCall(PcRef);
     const { answerCall, setCallId } = useAnswerCall(PcRef);
     const { localStream, startWebcam } = useLocalStream(PcRef);
@@ -25,12 +25,19 @@ export const Connect = () => {
     const [currentStep, setCurrentStep] = useState<number>(0);
     const { toast } = useToast();
     const localVideoRef = useRef(null);
+    const remoteVideoRef = useRef(null);
 
     useEffect(() => {
         if (localVideoRef.current && localStream) {
             localVideoRef.current.srcObject = localStream;
         }
     }, [localStream]);
+
+    useEffect(() => {
+        if (remoteVideoRef.current && remoteStream) {
+            remoteVideoRef.current.srcObject = remoteStream;
+        }
+    }, [remoteStream]);
 
 
     const
@@ -124,6 +131,7 @@ export const Connect = () => {
                             <video ref={localVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
                             : <Button onClick={startWebcam}>Start Streaming</Button>
                     }
+                    <video ref={remoteVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
                 </div>
                 <div className="flex flex-row gap-2">
                     <Input type="text" onChange={(e) => setCallId(e.target.value)} />
