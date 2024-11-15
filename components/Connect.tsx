@@ -9,13 +9,15 @@ import VisionSvg from "@/public/pixeltrue-vision-1 1.svg";
 import { UserData, useUserState } from "@/states/user-state";
 import { useCreateCall } from "@/hooks/use-create-call";
 import { usePeerConnection } from "@/states/pc-connection";
-import { Input } from "../ui/input";
+import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useLocalStream } from "@/hooks/use-local-stream";
+import { useAnswerCall } from "@/hooks/use-answer-call";
 
-export const UserRegist = () => {
+export const Connect = () => {
     const PcRef = usePeerConnection();
     const { createCall, callId } = useCreateCall(PcRef);
+    const { answerCall, setCallId } = useAnswerCall(PcRef);
     const { localStream, startWebcam } = useLocalStream(PcRef);
     const [userData, setUserData] = useUserState();
     const { hasCallCode, CallCode } = userData;
@@ -47,9 +49,8 @@ export const UserRegist = () => {
                 title: 'Code Copied to clipboard.',
                 description: 'Your call code is copied and ready to be shared.'
             });
-
         };
-        
+
 
     const Steps = [
         {
@@ -65,7 +66,7 @@ export const UserRegist = () => {
             describe: `Paste the code provided by the other peer to connect.`,
             cta: {
                 title: <>Connect <ArrowRight /></>,
-                onClick: () => { /* Add the function to handle connection */ },
+                onClick: answerCall,
             },
         },
         {
@@ -100,7 +101,7 @@ export const UserRegist = () => {
         ),
         CreateCallCode = () => (
             <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-center h-[300px] border-[#frm,]">
+                <div className="flex items-center justify-center aspect-video h-[300px] border border-[#ffffff12] rounded">
                     {
                         localStream ?
                             <video ref={localVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
@@ -114,10 +115,24 @@ export const UserRegist = () => {
                     </Button>
                 </div>
             </div>
+        ),
+        JoinCall = () => (
+            <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-center h-[300px] border-[#frm,]">
+                    {
+                        localStream ?
+                            <video ref={localVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
+                            : <Button onClick={startWebcam}>Start Streaming</Button>
+                    }
+                </div>
+                <div className="flex flex-row gap-2">
+                    <Input type="text" onChange={(e) => setCallId(e.target.value)} />
+                </div>
+            </div>
         )
 
     return (
-        <div className="flex flex-col gap-12 items-center justify-center max-w-full">
+        <div className="flex flex-col gap-8 items-center justify-center max-w-full">
             <Image src={PeersLogoSvg} alt="Peers" />
             <div className="flex flex-col items-center gap-4">
                 <h2 className="text-4xl font-normal text-center max-sm:text-2xl">
@@ -131,7 +146,7 @@ export const UserRegist = () => {
             {hasCallCode === null ? (
                 <UserCases />
             ) : !hasCallCode && !CallCode ? (
-                <>Paste Call Code</>
+                <JoinCall />
             ) : hasCallCode && !CallCode ? (
                 <CreateCallCode />
             ) : null}
