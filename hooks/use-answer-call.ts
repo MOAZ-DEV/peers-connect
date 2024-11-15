@@ -6,7 +6,7 @@ export const useAnswerCall = (pcRef) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [callId, setCallId] = useState("");
 
-    const answerCall = async () => {
+    const answerCall = async (callId) => {
         try {
             const callDoc = firestore.collection("calls").doc(callId);
             const answerCandidates = callDoc.collection("answerCandidates");

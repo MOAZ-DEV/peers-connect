@@ -17,11 +17,12 @@ import { useAnswerCall } from "@/hooks/use-answer-call";
 export const Connect = () => {
     const { PcRef, remoteStream } = usePeerConnection();
     const { createCall, callId } = useCreateCall(PcRef);
-    const { answerCall, setCallId } = useAnswerCall(PcRef);
+    const { answerCall } = useAnswerCall(PcRef);
     const { localStream, startWebcam } = useLocalStream(PcRef);
     const [userData, setUserData] = useUserState();
     const { hasCallCode, CallCode } = userData;
     const [userCase, setUserCase] = useState<number | null>(null);
+    const [remoteID, setRemoteID] = useState<string | null>(null);
     const [currentStep, setCurrentStep] = useState<number>(0);
     const { toast } = useToast();
     const localVideoRef = useRef(null);
@@ -56,7 +57,12 @@ export const Connect = () => {
                 title: 'Code Copied to clipboard.',
                 description: 'Your call code is copied and ready to be shared.'
             });
-        };
+        }, HandleAnswerCall = () => {
+            if (remoteID !== null) {
+                // setCallId();
+                answerCall(remoteID);
+            }
+        }
 
 
     const Steps = [
@@ -73,7 +79,7 @@ export const Connect = () => {
             describe: `Paste the code provided by the other peer to connect.`,
             cta: {
                 title: <>Connect <ArrowRight /></>,
-                onClick: answerCall,
+                onClick: HandleAnswerCall,
             },
         },
         {
@@ -114,6 +120,10 @@ export const Connect = () => {
                             <video ref={localVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
                             : <Button onClick={startWebcam}>Start Streaming</Button>
                     }
+                     {
+                        remoteStream &&
+                        <video ref={remoteVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
+                    }            
                 </div>
                 <div className="flex flex-row gap-2">
                     <Input readOnly type="text" value={callId} />
@@ -131,10 +141,14 @@ export const Connect = () => {
                             <video ref={localVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
                             : <Button onClick={startWebcam}>Start Streaming</Button>
                     }
-                    <video ref={remoteVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
-                </div>
+                    {
+                        remoteStream &&
+                        <video ref={remoteVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
+                    }            
+                        </div>
                 <div className="flex flex-row gap-2">
-                    <Input type="text" onChange={(e) => setCallId(e.target.value)} />
+                    {remoteID}
+                    <Input type="text" onChange={(e) => setRemoteID(e.target.value)} value={remoteID} />
                 </div>
             </div>
         )
