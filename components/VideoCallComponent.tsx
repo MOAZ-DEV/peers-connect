@@ -1,4 +1,4 @@
-import { useAnswerCall } from "@/hooks/use-answer-call";
+// import { useAnswerCall } from "@/hooks/use-answer-call";
 import { useCreateCall } from "@/hooks/use-create-call";
 import { useLocalStream } from "@/hooks/use-local-stream";
 import { usePeerConnection } from "@/hooks/use-peer-connection";
@@ -9,8 +9,8 @@ import { Input } from "./ui/input";
 const VideoCallComponent = () => {
   const { PcRef, remoteStream } = usePeerConnection();
   const { localStream, startWebcam } = useLocalStream(PcRef);
-  const { createCall, callId } = useCreateCall(PcRef);
-  const { answerCall } = useAnswerCall(PcRef);
+  const { createCall } = useCreateCall(PcRef);
+  // const {  } = useAnswerCall(PcRef);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const inputRef = useRef(null);
@@ -34,7 +34,7 @@ const VideoCallComponent = () => {
       <video ref={remoteVideoRef} autoPlay playsInline className="h-[300px] aspect-square"/>
       <button onClick={startWebcam}>Start Webcam</button>
       <button onClick={createCall}>Create Call</button>
-      <button onClick={() => answerCall(inputRef.current.value || callId)}>Answer Call</button>
+      {/* <button onClick={() => answerCall(inputRef.current.value || callId)}>Answer Call</button> */}
     </div>
   );
 };
