@@ -1,10 +1,11 @@
+import { useState } from "react";
 import useFirestore from "./use-firestore";
 
 export const useAnswerCall = (pcRef) => {
     const firestore = useFirestore();
-    // const [callId, setCallId] = useState("");
+    const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 
-    const answerCall = async (callId) => {
+    const answerCall = async (callId: string) => {
         try {
             const callDoc = firestore.collection("calls").doc(callId);
             const answerCandidates = callDoc.collection("answerCandidates");
@@ -12,11 +13,14 @@ export const useAnswerCall = (pcRef) => {
 
             pcRef.current.onicecandidate = (event) => {
                 if (event.candidate) {
+                    console.log("Adding ICE candidate:", event.candidate);  // Log ICE candidate
                     answerCandidates.add(event.candidate.toJSON());
+                } else {
+                    console.log("No more ICE candidates");
                 }
             };
 
-            // Get the offer from the call document
+            // Get the offer from Firestore
             const callSnapshot = await callDoc.get();
             const callData = callSnapshot.data();
 
@@ -41,18 +45,33 @@ export const useAnswerCall = (pcRef) => {
 
             await callDoc.update({ answer });
 
+            // Handle incoming candidates for the offer
             offerCandidates.onSnapshot((snapshot) => {
+                console.log('46 - offerCandidates snapshot received');
                 snapshot.docChanges().forEach((change) => {
+                    console.log('48 - change received:', change);
+
                     if (change.type === "added") {
+                        console.log('51 - ICE candidate added:', change.doc.data());
                         const candidate = new RTCIceCandidate(change.doc.data());
                         pcRef.current.addIceCandidate(candidate);
                     }
                 });
             });
+
+            // Set up the remote stream once the peer connection has tracks
+            pcRef.current.ontrack = (event) => {
+                console.log('60 - ontrack event received');
+
+                if (event.streams && event.streams[0]) {
+                    setRemoteStream(event.streams[0]);
+                    console.log('Remote stream received:', event.streams[0]);
+                }
+            };
         } catch (error) {
             console.error("Error answering call:", error);
         }
     };
 
-    return { answerCall };
+    return { answerCall, remoteStream };
 };

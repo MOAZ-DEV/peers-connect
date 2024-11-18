@@ -10,31 +10,32 @@ const servers = {
 };
 
 export const usePeerConnection = () => {
-  const [remoteStream, setRemoteStream] = useState(null);
-  const PcRef = useRef(null);
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null); 
+  const PcRef = useRef<RTCPeerConnection | null>(null); 
 
   useEffect(() => {
-    try {
-      PcRef.current = new RTCPeerConnection(servers);
-      const newRemoteStream = new MediaStream();
-      setRemoteStream(newRemoteStream);
+    const pc = new RTCPeerConnection(servers); 
+    const newRemoteStream = new MediaStream();
+    setRemoteStream(newRemoteStream);
 
-      PcRef.current.ontrack = (event) => {
-        if (event.streams && event.streams[0]) {
-          event.streams[0].getTracks().forEach((track) => {
-            newRemoteStream.addTrack(track);
-          });
-        }
-      };
-    } catch (error) {
-      console.error("Error creating RTCPeerConnection:", error);
-    }
+    // Set the ref to the created RTCPeerConnection
+    PcRef.current = pc;
+
+    // Handle the ontrack event
+    pc.ontrack = (event) => {
+      if (event.streams && event.streams[0]) {
+        event.streams[0].getTracks().forEach((track) => {
+          newRemoteStream.addTrack(track);
+          console.log(track)
+        });
+      }
+    };
 
     return () => {
       PcRef.current?.close();
+      PcRef.current = null;
     };
   }, []);
-
 
   return { PcRef, remoteStream };
 };
