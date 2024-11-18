@@ -1,14 +1,14 @@
 import { PeerConnectionProvider } from "@/states/pc-connection";
-import { UserStateProvider } from "@/states/user-state";
 import { Toaster } from "./ui/toaster";
+import { WebRTCProvider } from "./provider/WebRTCProvider";
 
 export default function Layout({ children }) {
     return (
         <>
             <PeerConnectionProvider>
-                <UserStateProvider>
+                <WebRTCProvider>
                     <main>{children}</main>
-                </UserStateProvider>
+                </WebRTCProvider>
             </PeerConnectionProvider>
             <Toaster />
         </>

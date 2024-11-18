@@ -3,8 +3,7 @@ import useFirestore from "./use-firestore";
 
 export const useAnswerCall = (pcRef) => {
     const firestore = useFirestore();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [callId, setCallId] = useState("");
+    // const [callId, setCallId] = useState("");
 
     const answerCall = async (callId) => {
         try {
@@ -56,5 +55,5 @@ export const useAnswerCall = (pcRef) => {
         }
     };
 
-    return { answerCall, setCallId };
+    return { answerCall };
 };

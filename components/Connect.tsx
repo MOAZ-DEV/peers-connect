@@ -1,188 +1,26 @@
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Clipboard } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ChooseCase, JoinCall, StartCall } from "./connect-break-down/Components";
 
 import PeersLogoSvg from "@/public/PeersLogo.svg";
-import ContactSvg from "@/public/pixeltrue-contact.svg";
-import VisionSvg from "@/public/pixeltrue-vision-1 1.svg";
-import { UserData, useUserState } from "@/states/user-state";
-import { useCreateCall } from "@/hooks/use-create-call";
-import { usePeerConnection } from "@/hooks/use-peer-connection";
-import { Input } from "./ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { useLocalStream } from "@/hooks/use-local-stream";
-import { useAnswerCall } from "@/hooks/use-answer-call";
+import { useWebRTC } from "./provider/WebRTCProvider";
 
 export const Connect = () => {
-    const { PcRef, remoteStream } = usePeerConnection();
-    const { createCall, callId } = useCreateCall(PcRef);
-    const { answerCall } = useAnswerCall(PcRef);
-    const { localStream, startWebcam } = useLocalStream(PcRef);
-    const [userData, setUserData] = useUserState();
-    const { hasCallCode, CallCode } = userData;
-    const [userCase, setUserCase] = useState<number | null>(null);
-    const [remoteID, setRemoteID] = useState<string | null>(null);
-    const [currentStep, setCurrentStep] = useState<number>(0);
-    const { toast } = useToast();
-    const localVideoRef = useRef(null);
-    const remoteVideoRef = useRef(null);
-
-    useEffect(() => {
-        if (localVideoRef.current && localStream) {
-            localVideoRef.current.srcObject = localStream;
-        }
-    }, [localStream]);
-
-    useEffect(() => {
-        if (remoteVideoRef.current && remoteStream) {
-            remoteVideoRef.current.srcObject = remoteStream;
-        }
-    }, [remoteStream]);
-
 
     const
-        HandleCaseSelect = () => {
-            setUserData({
-                ...userData,
-                hasCallCode: userCase === 0,
-            } as UserData);
-            setCurrentStep(userCase === 0 ? 2 : 1);
-            if (userCase === 0 && PcRef.current) {
-                createCall();
-            }
-        }, HandleCopyCallId = () => {
-            navigator.clipboard.writeText(callId);
-            toast({
-                title: 'Code Copied to clipboard.',
-                description: 'Your call code is copied and ready to be shared.'
-            });
-        }, HandleAnswerCall = () => {
-            if (remoteID !== null) {
-                // setCallId();
-                answerCall(remoteID);
-            }
-        }
+        [useCase, setUseCase] = useState<'offer' | 'accept' | null>(null),
+        { createCall, callId } = useWebRTC();
 
-
-    const Steps = [
-        {
-            title: <>Are you looking to make <br /> an offer or accept one?</>,
-            describe: `Please select the option that best describes you:`,
-            cta: {
-                title: <>Next <ArrowRight /></>,
-                onClick: HandleCaseSelect,
-            },
-        },
-        {
-            title: <>Connect with you peer.</>,
-            describe: `Paste the code provided by the other peer to connect.`,
-            cta: {
-                title: <>Connect <ArrowRight /></>,
-                onClick: HandleAnswerCall,
-            },
-        },
-        {
-            title: <>Now you started a call.</>,
-            describe: `Share the code to connect with peers.`,
-            cta: null,
-        },
-    ];
-
-    const Cases = [
-        { title: `I’d like to connect with peers and am offering my availability.`, imgSrc: ContactSvg },
-        { title: `I have an invite code and am ready to connect.`, imgSrc: VisionSvg },
-    ];
-
-    const
-        UserCases = () => (
-            <div className="flex flex-row gap-4 max-w-full overflow-x-auto p-4">
-                <div className="flex flex-row gap-4">
-                    {Cases.map(({ title, imgSrc }, idx) => (
-                        <div
-                            key={idx}
-                            onClick={() => setUserCase(idx)}
-                            className={`flex flex-col items-center justify-center w-72 min-w-min border border-[#ffffff25] rounded-xl hover:scale-[1.025] transition-all duration-300 cursor-pointer ${userCase === idx ? "!border-white" : ""}`}>
-                            <Image src={imgSrc} alt={title} className={`aspect-square w-full ${userCase !== idx && "grayscale"}`} />
-                            <p className={`text-center w-full px-12 py-6 transition-opacity duration-300 ${userCase !== idx ? "opacity-45" : ""}`}>
-                                {title}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        ),
-        CreateCallCode = () => (
-            <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-center aspect-video h-[300px] border border-[#ffffff12] rounded">
-                    {
-                        localStream ?
-                            <video ref={localVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
-                            : <Button onClick={startWebcam}>Start Streaming</Button>
-                    }
-                     {
-                        remoteStream &&
-                        <video ref={remoteVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
-                    }            
-                </div>
-                <div className="flex flex-row gap-2">
-                    <Input readOnly type="text" value={callId} />
-                    <Button variant="default" className="-left-[1px]" onClick={HandleCopyCallId}>
-                        <Clipboard />
-                    </Button>
-                </div>
-            </div>
-        ),
-        JoinCall = () => (
-            <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-center h-[300px] border-[#frm,]">
-                    {
-                        localStream ?
-                            <video ref={localVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
-                            : <Button onClick={startWebcam}>Start Streaming</Button>
-                    }
-                    {
-                        remoteStream &&
-                        <video ref={remoteVideoRef} autoPlay playsInline className="h-[300px] aspect-video rounded bg-[#80808013]" />
-                    }            
-                        </div>
-                <div className="flex flex-row gap-2">
-                    {remoteID}
-                    <Input type="text" onChange={(e) => setRemoteID(e.target.value)} value={remoteID} />
-                </div>
-            </div>
-        )
+    useEffect(() => {
+        if (useCase !== null && !callId) createCall();
+    }, [callId, createCall, useCase])
 
     return (
         <div className="flex flex-col gap-8 items-center justify-center max-w-full">
             <Image src={PeersLogoSvg} alt="Peers" />
-            <div className="flex flex-col items-center gap-4">
-                <h2 className="text-4xl font-normal text-center max-sm:text-2xl">
-                    {Steps[currentStep].title}
-                </h2>
-                <p className="text-sm font-light opacity-45">
-                    {Steps[currentStep].describe}
-                </p>
-            </div>
-
-            {hasCallCode === null ? (
-                <UserCases />
-            ) : !hasCallCode && !CallCode ? (
-                <JoinCall />
-            ) : hasCallCode && !CallCode ? (
-                <CreateCallCode />
-            ) : null}
-
-            {Steps[currentStep].cta && (
-                <Button
-                    size="lg"
-                    variant="secondary"
-                    onClick={Steps[currentStep].cta.onClick}
-                    className="font-semibold text-base"
-                    disabled={userCase === null}>
-                    {Steps[currentStep].cta.title}
-                </Button>
-            )}
+            {(useCase === null) && <ChooseCase setUseCase={setUseCase} />}
+            {(useCase === 'offer') && <StartCall />}
+            {(useCase === 'accept') && <JoinCall />}
         </div>
     );
 };
