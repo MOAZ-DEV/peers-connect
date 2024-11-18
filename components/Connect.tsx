@@ -12,7 +12,7 @@ export const Connect = () => {
         { createCall, callId } = useWebRTC();
 
     useEffect(() => {
-        if (useCase !== 'offer' && !callId) createCall();
+        if (useCase === 'offer' && !callId) createCall();
     }, [callId, createCall, useCase])
 
     return (
