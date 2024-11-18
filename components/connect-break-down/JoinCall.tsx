@@ -27,7 +27,6 @@ export const JoinCall = () => {
             }
         }
 
-
     return <>
         <div className="flex flex-col items-center gap-4">
             <h2 className="text-4xl font-normal text-center max-sm:text-2xl">
