@@ -1,4 +1,3 @@
-import { useState } from "react";
 import useFirestore from "./use-firestore";
 
 export const useAnswerCall = (pcRef) => {
