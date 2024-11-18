@@ -18,7 +18,7 @@ export const CaseCards = (
     useEffect(() => {
         if (ChoosenCase !== null)
             onChange(ChoosenCase);
-    }, [ChoosenCase])
+    }, [ChoosenCase, onChange])
 
     const Card = ({ code, title, imgSrc }) => (
         <div
