@@ -37,9 +37,7 @@ export const WebRTCProvider = ({ children }: WebRTCProviderProps) => {
             const pc = new RTCPeerConnection({
                 iceServers: [
                     {
-                        urls: 'stun:stun.l.google.com:19302', // Example STUN server
-                        username: 'a014a3d3',                // ICE username
-                        credential: 'ac441404c75a430228d9be110028aa47' // ICE password
+                        urls: 'stun:stun.l.google.com:19302'
                     }
                 ],
                 iceCandidatePoolSize: 10,
