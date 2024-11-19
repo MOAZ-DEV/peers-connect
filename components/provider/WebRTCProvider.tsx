@@ -13,7 +13,7 @@ import { useLocalStream } from "@/hooks/use-local-stream";
 // Define the context type
 interface WebRTCContextType {
     localStream: MediaStream | null;
-    remoteStream: MediaStream | null;
+    remoteStream: MediaStream | null; // Add this to the context
     startWebcam: () => Promise<void>;
     createCall: () => Promise<void>;
     answerCall: (callId: string) => Promise<void>;
@@ -21,15 +21,16 @@ interface WebRTCContextType {
     PcRef: MutableRefObject<RTCPeerConnection | null>;
 }
 
+
 // Initialize the context with null
 const WebRTCContext = createContext<WebRTCContextType | null>(null);
 
 interface WebRTCProviderProps {
     children: ReactNode;
 }
-
 export const WebRTCProvider = ({ children }: WebRTCProviderProps) => {
     const PcRef = useRef<RTCPeerConnection | null>(null);
+    const [remoteStream, setRemoteStream] = React.useState<MediaStream | null>(null); // Use state to store the remote stream
 
     useEffect(() => {
         // Ensure RTCPeerConnection is supported
@@ -42,7 +43,15 @@ export const WebRTCProvider = ({ children }: WebRTCProviderProps) => {
                 ],
                 iceCandidatePoolSize: 10,
             });
+
             PcRef.current = pc;
+
+            // Handle remote stream
+            pc.ontrack = (event) => {
+                if (event.streams && event.streams[0]) {
+                    setRemoteStream(event.streams[0]); // Set the remote stream when received
+                }
+            };
 
             return () => {
                 // Cleanup on unmount
@@ -57,13 +66,13 @@ export const WebRTCProvider = ({ children }: WebRTCProviderProps) => {
     // Use custom hooks for WebRTC functionalities
     const { localStream, startWebcam } = useLocalStream(PcRef);
     const { createCall, callId } = useCreateCall(PcRef);
-    const { answerCall, remoteStream } = useAnswerCall(PcRef);
+    const { answerCall } = useAnswerCall(PcRef);
 
     return (
         <WebRTCContext.Provider
             value={{
                 localStream,
-                remoteStream,
+                remoteStream, // Provide remoteStream here
                 startWebcam,
                 createCall,
                 answerCall,

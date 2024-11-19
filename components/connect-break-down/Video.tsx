@@ -50,23 +50,19 @@ export const Video = {
     const { remoteStream } = useWebRTC();
 
     useEffect(() => {
-      if (remoteVideoRef.current && remoteStream) {
+      if (remoteVideoRef.current && remoteStream ) {
         remoteVideoRef.current.srcObject = remoteStream;
       }
     }, [remoteStream]);
 
     return (
       <div className="flex items-center justify-center aspect-auto min-h-72 max-h-fit w-96 max-w-[100vw] border border-[#ffffff12] bg-[#ffffff07] rounded">
-        {remoteStream ? (
-          <video
+        <video
             ref={remoteVideoRef}
             autoPlay
             playsInline
             className="h-fit w-full object-cover rounded bg-[#80808013] transition-all"
           />
-        ) : (
-          <p className="text-white">Waiting for remote stream...</p>
-        )}
       </div>
     );
   },
