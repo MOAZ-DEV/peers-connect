@@ -1,19 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export const useLocalStream = (pcRef) => {
-  const [localStream, setLocalStream] = useState(null);
+// TypeScript support for the peer connection ref
+interface PCRef {
+  current: RTCPeerConnection | null;
+}
 
-  const startWebcam = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
-    setLocalStream(stream);
+export const useLocalStream = (pcRef: PCRef) => {
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
-    stream.getTracks().forEach((track) => {
-      pcRef.current?.addTrack(track, stream);
-    });
+  // Start webcam function with customizable constraints
+  const startWebcam = async (constraints: MediaStreamConstraints = { video: true, audio: true }) => {
+    try {
+      // Request media stream from the user's webcam
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setLocalStream(stream);
+
+      // Add tracks to the peer connection if it exists
+      stream.getTracks().forEach((track) => {
+        if (pcRef.current) {
+          pcRef.current.addTrack(track, stream);
+        }
+      });
+    } catch (error) {
+      console.error("Error accessing webcam:", error);
+    }
   };
 
-  return { localStream, startWebcam };
+  // Stop webcam function, which stops all media tracks
+  const stopWebcam = () => {
+    if (localStream) {
+      localStream.getTracks().forEach((track) => {
+        track.stop();
+      });
+      setLocalStream(null);
+    }
+  };
+
+  // Cleanup the stream when component is unmounted or webcam is stopped
+  useEffect(() => {
+    return () => {
+      if (localStream) {
+        localStream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+    };
+  }, [localStream]);
+
+  return { localStream, startWebcam, stopWebcam };
 };

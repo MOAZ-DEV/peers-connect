@@ -11,6 +11,7 @@ export const JoinCall = () => {
 
     const {
         answerCall,
+        localStream
     } = useWebRTC();
 
     const
@@ -36,11 +37,11 @@ export const JoinCall = () => {
         </div>
         <div className="flex flex-col gap-4">
             <div className="flex flex-row max-md:flex-col gap-2">
-                <Video.LocalStram />
+                <Video.LocalStream />
                 <Video.RemoteStream />
             </div>
             <div className="flex flex-row gap-2">
-                <Input type="text" onChange={HandleChange} />
+                {localStream && <Input type="text" onChange={HandleChange} />}
             </div>
         </div>
         <Button

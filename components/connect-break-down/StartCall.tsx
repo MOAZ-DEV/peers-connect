@@ -7,9 +7,10 @@ import { toast } from "@/hooks/use-toast"
 
 export const StartCall = () => {
 
-      
     const {
         callId,
+        createCall,
+        localStream
     } = useWebRTC();
 
     const
@@ -30,15 +31,21 @@ export const StartCall = () => {
         </div>
         <div className="flex flex-col gap-4">
             <div className="flex flex-row max-md:flex-col gap-2">
-                <Video.LocalStram />
+                <Video.LocalStream />
                 <Video.RemoteStream />
             </div>
-            <div className="flex flex-row gap-2">
-                <Input readOnly type="text" value={callId} />
-                <Button variant="default" className="-left-[1px]" onClick={HandleCopyCallId}>
-                    <Clipboard />
-                </Button>
-            </div>
+            {
+                callId === null ?
+                    localStream && <Button variant="secondary" onClick={createCall}>
+                        Create Call
+                    </Button> :
+                    <div className="flex flex-row gap-2">
+                        <Input readOnly type="text" value={callId} />
+                        <Button variant="default" className="-left-[1px]" onClick={HandleCopyCallId}>
+                            <Clipboard />
+                        </Button>
+                    </div>
+            }
         </div>
     </>
 }

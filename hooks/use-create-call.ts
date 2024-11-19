@@ -3,42 +3,47 @@ import useFirestore from "./use-firestore";
 
 export const useCreateCall = (pcRef) => {
   const firestore = useFirestore();
-  const [callId, setCallId] = useState("");
+  const [callId, setCallId] = useState<string | null>(null);
 
   const createCall = async () => {
     try {
+      // Create a new Firestore call document
       const callDoc = firestore.collection("calls").doc();
       const offerCandidates = callDoc.collection("offerCandidates");
       const answerCandidates = callDoc.collection("answerCandidates");
 
+      // Save the call ID for later reference
       setCallId(callDoc.id);
 
+      // Add ICE candidates to Firestore
       pcRef.current.onicecandidate = (event) => {
         if (event.candidate) {
           offerCandidates.add(event.candidate.toJSON());
         }
       };
 
-      // Create offer
-      const offerDescription = await pcRef.current.createOffer();
-      await pcRef.current.setLocalDescription(offerDescription);
+      // Create and send the offer
+      const offer = await pcRef.current.createOffer();
+      await pcRef.current.setLocalDescription(offer);
 
-      // Save the offer to Firestore (without `toJSON`)
-      const offer = {
-        sdp: offerDescription.sdp,
-        type: offerDescription.type,
-      };
+      // Save the offer SDP to Firestore
+      await callDoc.set({
+        offer: {
+          type: offer.type,
+          sdp: offer.sdp,
+        },
+      });
 
-      await callDoc.set({ offer });
-
+      // Listen for the answer SDP and set it as the remote description
       callDoc.onSnapshot((snapshot) => {
         const data = snapshot.data();
-        if (data && data.answer && !pcRef.current.currentRemoteDescription) {
-          const answerDescription = new RTCSessionDescription(data.answer);
-          pcRef.current.setRemoteDescription(answerDescription);
+        if (data?.answer && !pcRef.current.currentRemoteDescription) {
+          const answer = new RTCSessionDescription(data.answer);
+          pcRef.current.setRemoteDescription(answer);
         }
       });
 
+      // Listen for remote ICE candidates and add them to the peer connection
       answerCandidates.onSnapshot((snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === "added") {

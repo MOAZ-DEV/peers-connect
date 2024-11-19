@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useFirestore from "./use-firestore";
 
 export const useAnswerCall = (pcRef) => {
@@ -13,7 +13,7 @@ export const useAnswerCall = (pcRef) => {
 
             pcRef.current.onicecandidate = (event) => {
                 if (event.candidate) {
-                    console.log("Adding ICE candidate:", event.candidate);  // Log ICE candidate
+                    console.log("Adding ICE candidate:", event.candidate);
                     answerCandidates.add(event.candidate.toJSON());
                 } else {
                     console.log("No more ICE candidates");
@@ -47,12 +47,8 @@ export const useAnswerCall = (pcRef) => {
 
             // Handle incoming candidates for the offer
             offerCandidates.onSnapshot((snapshot) => {
-                console.log('46 - offerCandidates snapshot received');
                 snapshot.docChanges().forEach((change) => {
-                    console.log('48 - change received:', change);
-
                     if (change.type === "added") {
-                        console.log('51 - ICE candidate added:', change.doc.data());
                         const candidate = new RTCIceCandidate(change.doc.data());
                         pcRef.current.addIceCandidate(candidate);
                     }
@@ -61,17 +57,24 @@ export const useAnswerCall = (pcRef) => {
 
             // Set up the remote stream once the peer connection has tracks
             pcRef.current.ontrack = (event) => {
-                console.log('60 - ontrack event received');
-
                 if (event.streams && event.streams[0]) {
                     setRemoteStream(event.streams[0]);
-                    console.log('Remote stream received:', event.streams[0]);
                 }
             };
         } catch (error) {
             console.error("Error answering call:", error);
         }
     };
+
+    // Cleanup the ICE candidate and track listeners when component unmounts
+    useEffect(() => {
+        return () => {
+            if (pcRef.current) {
+                pcRef.current.onicecandidate = null;
+                pcRef.current.ontrack = null;
+            }
+        };
+    }, [pcRef]);
 
     return { answerCall, remoteStream };
 };
