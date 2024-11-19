@@ -7,7 +7,7 @@ import { useWebRTC } from "../provider/WebRTCProvider"
 import { toast } from "@/hooks/use-toast"
 
 export const JoinCall = () => {
-    const [remoteID, setRemoteID] = useState<string | null>()
+    const [remoteID, setRemoteID] = useState<string | null>(null)
 
     const {
         answerCall,
