@@ -39,9 +39,7 @@ export const WebRTCProvider = ({ children }: WebRTCProviderProps) => {
                 iceServers: [
                     {
                         urls: 'stun:stun.l.google.com:19302',
-                    }, {
-                        urls: 'turns:my-turn.com:443'
-                    }
+                    },
                 ],
                 iceCandidatePoolSize: 10,
             });

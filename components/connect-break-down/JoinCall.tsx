@@ -1,31 +1,32 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useWebRTC } from "../provider/WebRTCProvider"
+import { useSearchParams } from "next/navigation"
 
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { Video } from "./Video"
-import { useWebRTC } from "../provider/WebRTCProvider"
-import { toast } from "@/hooks/use-toast"
+
 
 export const JoinCall = () => {
-    const [remoteID, setRemoteID] = useState<string | null>(null)
-
-    const {
-        answerCall,
-        localStream
-    } = useWebRTC();
 
     const
-        HandleChange = (evt) => {
-            setRemoteID(evt.target.value)
-        },
+        [remoteID, setRemoteID] = useState<string | null>(null),
+        { answerCall, localStream } = useWebRTC(),
+        searchParams = useSearchParams(),
+        offer = searchParams.get('offer');
+
+    useEffect(() => {
+        if (offer)
+            setRemoteID('accept');
+        HandleOnClick();
+    }, [offer])
+
+    const
+        HandleChange = (evt) => 
+            setRemoteID(evt.target.value),
         HandleOnClick = () => {
-            toast({
-                title: 'Remote ID',
-                description: remoteID
-            });
-            if (remoteID !== null) {
+            if (remoteID !== null)
                 answerCall(remoteID);
-            }
         }
 
     return <>

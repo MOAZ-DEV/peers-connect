@@ -7,15 +7,15 @@ import { toast } from "@/hooks/use-toast"
 
 export const StartCall = () => {
 
-    const {
-        callId,
-        createCall,
-        localStream
-    } = useWebRTC();
+    const
+        { callId, createCall, localStream } = useWebRTC();
+
+    const
+        JoinLink = `https://kalam-p2p.vercel.app/connect?offer=${callId}`
 
     const
         HandleCopyCallId = () => {
-            navigator.clipboard.writeText(callId);
+            navigator.clipboard.writeText(JoinLink);
             toast({
                 title: 'Code Copied to clipboard.',
                 description: 'Your call code is copied and ready to be shared.'
@@ -42,6 +42,7 @@ export const StartCall = () => {
                     <div className="flex flex-row gap-2">
                         <Input readOnly type="text" value={callId} />
                         <Button variant="default" className="-left-[1px]" onClick={HandleCopyCallId}>
+                            Copy Invite Link
                             <Clipboard />
                         </Button>
                     </div>
