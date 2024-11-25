@@ -49,25 +49,31 @@ export const Video = {
     const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
     const { remoteStream } = useWebRTC();
 
-    useEffect(() => {
-      if (remoteVideoRef.current && remoteStream !== null) {
-        remoteVideoRef.current.srcObject = remoteStream;
-      }
-    }, [remoteStream]);
+    const PeerStream = ({ stream }) => {
+      useEffect(() => {
+        if (remoteVideoRef.current && stream !== null) {
+          remoteVideoRef.current.srcObject = stream;
+        }
+      }, [stream]);
 
-    return (
-      <div className="flex items-center justify-center aspect-auto min-h-72 max-h-fit w-96 max-w-[100vw] max-sm:w-full border border-[#ffffff12] bg-[#ffffff07] rounded">
-        {remoteStream !== null ? (
-          <video
-            ref={remoteVideoRef}
-            autoPlay
-            playsInline
-            className="h-fit w-full object-cover rounded bg-[#80808013] transition-all"
-          />
-        ) : (
-          <p className="text-white">Waiting for remote stream...</p>
-        )}
-      </div>
-    );
+      return (
+        <div className="flex items-center justify-center aspect-auto min-h-72 max-h-fit w-96 max-w-[100vw] max-sm:w-full border border-[#ffffff12] bg-[#ffffff07] rounded">
+          {remoteStream !== null ? (
+            <video
+              ref={remoteVideoRef}
+              autoPlay
+              playsInline
+              className="h-fit w-full object-cover rounded bg-[#80808013] transition-all"
+            />
+          ) : (
+            <p className="text-white">Waiting for remote stream...</p>
+          )}
+        </div>
+      );
+    }
+    if (remoteVideoRef.current && remoteStream !== null)
+      return remoteStream.map((stream) => {
+        <PeerStream {...{ stream }} />
+      });
   },
 };

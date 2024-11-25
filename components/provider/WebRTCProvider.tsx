@@ -13,7 +13,7 @@ import { useLocalStream } from "@/hooks/use-local-stream";
 // Define the context type
 interface WebRTCContextType {
     localStream: MediaStream | null;
-    remoteStream: MediaStream | null; // Add this to the context
+    remoteStream: readonly MediaStream[] | null; // Add this to the context
     startWebcam: () => Promise<void>;
     createCall: () => Promise<void>;
     answerCall: (callId: string) => Promise<void>;
@@ -30,7 +30,7 @@ interface WebRTCProviderProps {
 }
 export const WebRTCProvider = ({ children }: WebRTCProviderProps) => {
     const PcRef = useRef<RTCPeerConnection | null>(null);
-    const [remoteStream, setRemoteStream] = React.useState<MediaStream | null>(null); // Use state to store the remote stream
+    const [remoteStream, setRemoteStream] = React.useState<readonly MediaStream[] | null>(null); // Use state to store the remote stream
 
     useEffect(() => {
         // Ensure RTCPeerConnection is supported
@@ -52,7 +52,7 @@ export const WebRTCProvider = ({ children }: WebRTCProviderProps) => {
             // Handle remote stream
             pc.ontrack = (event) => {
                 if (event.streams && event.streams[0]) {
-                    setRemoteStream(event.streams[0]); // Set the remote stream when received
+                    setRemoteStream(event.streams); // Set the remote stream when received
                 }
             };
 
