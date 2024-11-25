@@ -40,6 +40,9 @@ export const WebRTCProvider = ({ children }: WebRTCProviderProps) => {
                     {
                         urls: 'stun:stun.l.google.com:19302',
                     },
+                    {
+                        urls: 'stun:stun.voipbuster.com'
+                    }
                 ],
                 iceCandidatePoolSize: 10,
             });
