@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 const ConnectPage = () => {
 
   return (
-    <div className="min-h-screen flex flex-col gap-12 items-center justify-center py-9">
+    <div className="min-h-screen flex flex-col gap-12 items-center justify-center py-9 dark">
       <Head>
         <title>Peers Connect</title>
         <meta name="description" content="An open-source app that enables peer-to-peer connections through WebRTC with minimal reliance on third-party services." />

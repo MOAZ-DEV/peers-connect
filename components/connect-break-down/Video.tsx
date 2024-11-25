@@ -26,7 +26,7 @@ export const Video = {
     }, [localStream]);
 
     return (
-      <div className="flex items-center justify-center aspect-auto min-h-72 max-h-fit w-96 max-w-[100vw] border border-[#ffffff12] bg-[#ffffff07] rounded">
+      <div className="flex items-center justify-center aspect-auto min-h-72 max-h-fit w-96 max-w-[100vw] max-sm:w-full border border-[#ffffff12] bg-[#ffffff07] rounded">
         {localStream ? (
           <video
             ref={localVideoRef}
@@ -56,7 +56,7 @@ export const Video = {
     }, [remoteStream]);
 
     return (
-      <div className="flex items-center justify-center aspect-auto min-h-72 max-h-fit w-96 max-w-[100vw] border border-[#ffffff12] bg-[#ffffff07] rounded">
+      <div className="flex items-center justify-center aspect-auto min-h-72 max-h-fit w-96 max-w-[100vw] max-sm:w-full border border-[#ffffff12] bg-[#ffffff07] rounded">
         {remoteStream !== null ? (
           <video
             ref={remoteVideoRef}

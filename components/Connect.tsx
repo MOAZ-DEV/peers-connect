@@ -26,7 +26,7 @@ export const Connect = () => {
         }, [useCase])
         
     return (
-        <div className="flex flex-col gap-8 items-center justify-center max-w-full">
+        <div className="flex flex-col gap-8 items-center justify-center max-w-full px-4">
             <Image src={PeersLogoSvg} alt="Peers" />
             {(useCase === null) && <ChooseCase setUseCase={setUseCase} />}
             {(useCase === 'offer') && <StartCall />}
