@@ -9,7 +9,7 @@ export const useLocalStream = (pcRef: PCRef) => {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
   // Start webcam function with customizable constraints
-  const startWebcam = async (constraints: MediaStreamConstraints = { video: true, audio: true }) => {
+  const startWebcam = async (constraints: MediaStreamConstraints = { video: true, audio: false }) => {
     try {
       // Request media stream from the user's webcam
       const stream = await navigator.mediaDevices.getUserMedia(constraints);

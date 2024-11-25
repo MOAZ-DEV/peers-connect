@@ -17,7 +17,7 @@ export const JoinCall = () => {
 
     useEffect(() => {
         if (offer)
-            setRemoteID('accept');
+            setRemoteID(offer);
         HandleOnClick();
     }, [offer])
 
@@ -42,7 +42,7 @@ export const JoinCall = () => {
                 <Video.RemoteStream />
             </div>
             <div className="flex flex-row gap-2">
-                {localStream && <Input type="text" onChange={HandleChange} />}
+                {localStream && <Input type="text" onChange={HandleChange} value={remoteID} />}
             </div>
         </div>
         <Button
