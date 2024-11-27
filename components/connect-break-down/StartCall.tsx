@@ -1,7 +1,7 @@
 import { Clipboard, QrCode } from "lucide-react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
-import { Video } from "./Video"
+import { VideoStrams } from "./Video"
 import { useWebRTC } from "../provider/WebRTCProvider"
 import { toast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
@@ -39,10 +39,7 @@ export const StartCall = () => {
                 Share the code to connect with peers.</p>
         </div>
         <div className="flex flex-col gap-9">
-            <div className="flex flex-row max-md:flex-col gap-2">
-                <Video.LocalStream />
-                <Video.RemoteStream />
-            </div>
+            <VideoStrams />
             {
                 callId === null ?
                     localStream && <Button variant="default" onClick={createCall}>
